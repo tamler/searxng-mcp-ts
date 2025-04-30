@@ -17,54 +17,69 @@ This is a Model Context Protocol (MCP) server that provides a tool to interact w
 
 ## Installation
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url> # Replace with the actual URL after publishing
-    cd searxng-mcp-ts
-    ```
+This server can be installed as an npm package.
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+```bash
+npm install -g searxng-mcp-ts # Install globally
+# OR
+# npm install searxng-mcp-ts # Install as a project dependency
+```
 
-3.  **Build the server:**
-    ```bash
-    npm run build
-    ```
-    This compiles the TypeScript code into JavaScript in the `build/` directory.
+Alternatively, you can clone the repository and build it:
+
+```bash
+git clone <repository-url> # Replace with the actual URL after publishing
+cd searxng-mcp-ts
+npm install
+npm run build
+```
 
 ## Configuration
 
 This server requires the URL of your SearXNG instance. You can provide this by setting the `SEARXNG_URL` environment variable.
 
-For convenience during development, you can also create a `.env` file in the project root with the following content:
+If you installed the package globally or as a project dependency, you can set the environment variable before running the command.
+
+For convenience during development when cloning the repository, you can also create a `.env` file in the project root with the following content:
 
 ```dotenv
 SEARXNG_URL=https://your-searxng-instance.com # <-- Update this URL
 ```
 
-Alternatively, you can configure the `SEARXNG_URL` environment variable directly in your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline):
+In your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline), you can configure the server using `npx` (if not installed globally) or the command name (if installed globally):
 
 ```json
 {
   "mcpServers": {
-    "searxng": {
-      "command": "node",
-      "args": ["/path/to/searxng-mcp-ts/build/index.js"], // <-- Update this path
+    "searxng-mcp-ts": { // Use the package name as the key
+      "command": "npx",
+      "args": ["-y", "searxng-mcp-ts@latest"], // Use npx with package name
       "env": {
         "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
       },
+      "timeout": 60, // Optional: Add a timeout
+      "transportType": "stdio", // Optional: Specify transport type
       "disabled": false,
       "alwaysAllow": []
     }
+    // OR if installed globally:
+    // "searxng-mcp-ts": {
+    //   "command": "searxng-mcp-ts", // Use the command name
+    //   "env": {
+    //     "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
+    //   },
+    //   "timeout": 60, // Optional: Add a timeout
+    //   "transportType": "stdio", // Optional: Specify transport type
+    //   "disabled": false,
+    //   "alwaysAllow": []
+    // }
     // ... other servers
   }
 }
 ```
 
 **Important:**
-*   Replace `/path/to/searxng-mcp-ts/build/index.js` with the absolute path to the built `index.js` file in your cloned repository.
+
 *   Replace `https://your-searxng-instance.com` with the actual base URL of your SearxNG instance.
 
 Restart your MCP client after updating the configuration.

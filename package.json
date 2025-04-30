@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "mcp-server-searxng": "./build/index.js"
+    "searxng-mcp-ts": "./build/index.js"
   },
   "files": [
     "build"
