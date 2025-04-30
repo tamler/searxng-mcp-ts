@@ -20,9 +20,9 @@ This is a Model Context Protocol (MCP) server that provides a tool to interact w
 This server can be installed as an npm package.
 
 ```bash
-npm install -g searxng-mcp-ts # Install globally
+npm install -g @tamler/searxng-mcp-ts # Install globally
 # OR
-# npm install searxng-mcp-ts # Install as a project dependency
+# npm install @tamler/searxng-mcp-ts # Install as a project dependency
 ```
 
 Alternatively, you can clone the repository and build it:
