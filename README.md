@@ -54,28 +54,15 @@ In your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline), yo
     "searxng": {
       "description": "Search aggregator that queries multiple search engines and returns combined results",
       "command": "npx",
-      "args": ["-y", "searxng-mcp-ts@latest"], // Use the package name
+      "args": ["-y", "searxng-mcp-ts@latest"],
       "env": {
         "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
       },
-      "timeout": 60, // Optional: Add a timeout
-      "transportType": "stdio", // Optional: Specify transport type
+      "timeout": 60,
+      "transportType": "stdio", 
       "disabled": false,
       "alwaysAllow": []
     }
-    // OR if installed globally:
-    // "searxng": {
-    //   "description": "Search aggregator that queries multiple search engines and returns combined results",
-    //   "command": "searxng-mcp-ts", // Use the package name as command
-    //   "env": {
-    //     "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
-    //   },
-    //   "timeout": 60, // Optional: Add a timeout
-    //   "transportType": "stdio", // Optional: Specify transport type
-    //   "disabled": false,
-    //   "alwaysAllow": []
-    // }
-    // ... other servers
   }
 }
 ```
