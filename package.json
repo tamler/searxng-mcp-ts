@@ -1,0 +1,28 @@
+{
+  "name": "searxng-mcp-ts",
+  "version": "0.1.0",
+  "description": "MCP for searXNG",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "mcp-server-searxng": "./build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "axios": "^1.8.4",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.32",
+    "typescript": "^5.3.3"
+  }
+}
