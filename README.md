@@ -1,4 +1,4 @@
-# SearxNG MCP Server (TypeScript)
+# SearxNG MCP Server
 
 [![MCP](https://img.shields.io/badge/MCP-Server-blue)](https://github.com/modelcontextprotocol/spec)
 
