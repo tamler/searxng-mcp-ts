@@ -1,5 +1,5 @@
 {
-  "name": "searxng-mcp-ts",
+  "name": "@tamler/searxng-mcp-ts",
   "version": "0.1.0",
   "description": "MCP for searXNG",
   "license": "MIT",
