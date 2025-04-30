@@ -51,9 +51,10 @@ In your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline), yo
 ```json
 {
   "mcpServers": {
-    "searxng-mcp-ts": { // Use the package name as the key
+    "searxng": {
+      "description": "Search aggregator that queries multiple search engines and returns combined results",
       "command": "npx",
-      "args": ["-y", "searxng-mcp-ts@latest"], // Use npx with package name
+      "args": ["-y", "searxng-mcp-ts@latest"], // Use the package name
       "env": {
         "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
       },
@@ -63,8 +64,9 @@ In your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline), yo
       "alwaysAllow": []
     }
     // OR if installed globally:
-    // "searxng-mcp-ts": {
-    //   "command": "searxng-mcp-ts", // Use the command name
+    // "searxng": {
+    //   "description": "Search aggregator that queries multiple search engines and returns combined results",
+    //   "command": "searxng-mcp-ts", // Use the package name as command
     //   "env": {
     //     "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
     //   },
