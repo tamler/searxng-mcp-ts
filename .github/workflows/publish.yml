@@ -22,10 +22,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm ci
 
       - name: Build
-        run: npm run build
+        run: pnpm build
 
       - name: Validate version matches tag
         run: |
@@ -40,6 +40,6 @@ jobs:
           echo "Version validation passed: $PACKAGE_VERSION matches tag $TAG_NAME"
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: pnpm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
