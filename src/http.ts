@@ -10,6 +10,7 @@ import { createSearxNGMcpServer } from './server.js'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
 const HOST = process.env.HOST || '127.0.0.1'
+const MAX_SESSIONS = parseInt(process.env.MAX_SESSIONS || '100', 10)
 
 // Validate configuration at startup
 const { serverInfo, searxngUrl } = createSearxNGMcpServer()
@@ -26,6 +27,15 @@ app.post('/mcp', async (req: IncomingMessage & { body: unknown }, res: ServerRes
   if (sessionId && transports.has(sessionId)) {
     transport = transports.get(sessionId)!
   } else if (!sessionId) {
+    if (transports.size >= MAX_SESSIONS) {
+      res.writeHead(503, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({
+        jsonrpc: '2.0',
+        error: { code: -32000, message: 'Service Unavailable: Maximum session limit reached' },
+        id: null,
+      }))
+      return
+    }
     // Create a new McpServer instance per session
     const { mcpServer } = createSearxNGMcpServer()
     transport = new StreamableHTTPServerTransport({
