@@ -184,6 +184,10 @@ This server includes improved error handling and logging to assist in debugging 
 *   **Linting:** `npm run lint`
 *   **Formatting:** `npm run format`
 
+## Publishing
+
+For information on publishing new releases to npm, see [PUBLISHING.md](PUBLISHING.md).
+
 ## License
 
 MIT License
