@@ -4,10 +4,13 @@
   "description": "MCP for searXNG",
   "license": "MIT",
   "type": "module",
-  "bin": { "searxng-mcp-ts": "./build/index.js" },
+  "bin": {
+    "searxng-mcp-ts": "./build/index.js",
+    "searxng-mcp-ts-http": "./build/http.js"
+  },
   "files": ["build"],
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\" && node -e \"require('fs').chmodSync('build/http.js', '755')\"",
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
