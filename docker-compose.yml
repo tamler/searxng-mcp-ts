@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  # ===========================================
+  # SearXNG MCP Server (HTTP mode)
+  # ===========================================
+  searxng-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: searxng-mcp-ts:latest
+    container_name: searxng-mcp
+    restart: unless-stopped
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - NODE_ENV=production
+      - SEARXNG_URL=${SEARXNG_URL:?SEARXNG_URL is required}
+      - PORT=${PORT:-3000}
+      - HOST=${HOST:-0.0.0.0}
+      - MAX_SESSIONS=${MAX_SESSIONS:-100}
+      - AUTHORIZATION_HEADER=${AUTHORIZATION_HEADER}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - mcp-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ===========================================
+  # SearXNG Instance (optional, for local development)
+  # ===========================================
+  # searxng:
+  #   image: searxng/searxng:latest
+  #   container_name: searxng
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8888:8080"
+  #   environment:
+  #     - BASE_URL=http://localhost:8888/
+  #     - INSTANCE_NAME=SearXNG
+  #   volumes:
+  #     - searxng-data:/etc/searxng
+  #   networks:
+  #     - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge
+
+# volumes:
+#   searxng-data:

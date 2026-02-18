@@ -1,316 +1,280 @@
-# SearxNG MCP Server
+# SearXNG MCP Server
 
 [![MCP](https://img.shields.io/badge/MCP-Server-blue)](https://github.com/modelcontextprotocol/spec)
+[![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen)](https://www.docker.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-24+-green)](https://nodejs.org/)
 
-This is a Model Context Protocol (MCP) server that provides a tool to interact with a SearXNG instance.
+A Model Context Protocol (MCP) server that provides search capabilities through SearXNG, a privacy-respecting metasearch engine that aggregates results from multiple search engines.
 
-## Features
+## ✨ Features
 
-*   Exposes a `search` tool to perform searches via a configured SearXNG instance.
-*   Supports standard SearXNG parameters like `query`, `categories`, `language`, `page_number`, `time_range`, and `safesearch`.
-*   Two transport modes: **stdio** (default) and **HTTP** (Streamable HTTP).
+- 🔍 **Search Tool**: Perform searches via any SearXNG instance
+- 📡 **Dual Transport Modes**: stdio (default) and HTTP (Streamable HTTP)
+- 🔐 **Custom Headers**: Support for authentication and custom headers
+- 🐳 **Docker Ready**: Multi-stage Dockerfile and docker-compose support
+- 🚀 **Production Ready**: Error handling, logging, and health checks
 
-## Prerequisites
+### Supported Search Parameters
 
-*   Node.js (v18 or later recommended)
-*   npm
-*   Access to a running SearXNG instance (either self-hosted or public)
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `query` | string | The search query (required) |
+| `categories` | string | Comma-separated categories (e.g., "general,images,videos") |
+| `language` | string | Search language code (e.g., "en", "es", "de") |
+| `page_number` | number | Page number for pagination (default: 1) |
+| `time_range` | enum | Filter by time: "day", "week", "month", "year" |
+| `safesearch` | number | Safe search level: 0 (off), 1 (moderate), 2 (strict) |
 
-## Installation
+## 📋 Prerequisites
 
-This server can be installed as an npm package.
+- Node.js v24+ or Docker
+- Access to a SearXNG instance (self-hosted or public)
+
+## 🚀 Quick Start
+
+### Using npx (Recommended)
 
 ```bash
-npm install -g searxng-mcp-ts # Install globally
-# OR
-# npm install searxng-mcp-ts # Install as a project dependency
+SEARXNG_URL=https://your-searxng-instance.com npx -y searxng-mcp-ts@latest
 ```
 
-Alternatively, you can clone the repository and build it:
+### Using Docker
 
 ```bash
-git clone <repository-url> # Replace with the actual URL after publishing
+# Clone the repository
+git clone https://github.com/deaquino/searxng-mcp-ts.git
 cd searxng-mcp-ts
-npm install
-npm run build
+
+# Create .env file
+cp .env.example .env
+# Edit .env and set your SEARXNG_URL
+
+# Run with docker-compose
+docker-compose up -d
 ```
 
-## Configuration
+## 📦 Installation
 
-This server requires the URL of your SearXNG instance. You can provide this by setting the `SEARXNG_URL` environment variable.
+### Option 1: NPM Global Install
 
-If you installed the package globally or as a project dependency, you can set the environment variable before running the command.
+```bash
+npm install -g searxng-mcp-ts
+```
 
-For convenience during development when cloning the repository, you can also create a `.env` file in the project root with the following content:
+### Option 2: Clone and Build
+
+```bash
+git clone https://github.com/deaquino/searxng-mcp-ts.git
+cd searxng-mcp-ts
+pnpm install
+pnpm build
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `SEARXNG_URL` | ✅ Yes | - | URL of your SearXNG instance |
+| `PORT` | No | `3000` | HTTP server port |
+| `HOST` | No | `127.0.0.1` | HTTP server bind address |
+| `MAX_SESSIONS` | No | `100` | Maximum concurrent HTTP sessions |
+| `AUTHORIZATION_HEADER` | No | - | Authorization header value |
+| `X_*_HEADER` | No | - | Custom X-headers (see below) |
+
+### Using .env File
+
+Create a `.env` file in the project root:
 
 ```dotenv
-SEARXNG_URL=https://your-searxng-instance.com # <-- Update this URL
+SEARXNG_URL=https://your-searxng-instance.com
+PORT=3000
+HOST=127.0.0.1
+MAX_SESSIONS=100
 ```
-
-In your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline), you can configure the server using `npx` (if not installed globally) or the command name (if installed globally):
-
-```json
-{
-  "mcpServers": {
-    "searxng": {
-      "description": "Search aggregator that queries multiple search engines and returns combined results",
-      "command": "npx",
-      "args": ["-y", "searxng-mcp-ts@latest"],
-      "env": {
-        "SEARXNG_URL": "https://your-searxng-instance.com" // <-- Update this URL
-      },
-      "timeout": 60,
-      "transportType": "stdio", 
-      "disabled": false,
-      "alwaysAllow": []
-    }
-  }
-}
-```
-
-**Important:**
-
-*   Replace `https://your-searxng-instance.com` with the actual base URL of your SearxNG instance.
-
-Restart your MCP client after updating the configuration.
 
 ### Custom Headers
 
-The server supports custom headers for requests to your SearXNG instance. This is useful for authentication or other custom requirements.
-
 #### Authorization Header
-
-To add an `Authorization` header (e.g., for Bearer token authentication), set the `AUTHORIZATION_HEADER` environment variable:
 
 ```dotenv
 AUTHORIZATION_HEADER=Bearer YOUR_TOKEN_HERE
-```
-
-In your MCP client configuration:
-
-```json
-{
-  "mcpServers": {
-    "searxng": {
-      "description": "Search aggregator that queries multiple search engines and returns combined results",
-      "command": "npx",
-      "args": ["-y", "searxng-mcp-ts@latest"],
-      "env": {
-        "SEARXNG_URL": "https://your-searxng-instance.com",
-        "AUTHORIZATION_HEADER": "Bearer YOUR_TOKEN_HERE"
-      }
-    }
-  }
-}
 ```
 
 #### Custom X-Headers
 
-You can add custom headers that start with `X-` by using environment variables in the format `X_*_HEADER`. The environment variable name will be converted to the proper header format.
+Use the `X_*_HEADER` pattern. Examples:
 
-**Naming Convention:**
+| Environment Variable | HTTP Header |
+|---------------------|-------------|
+| `X_API_KEY_HEADER=secret` | `X-Api-Key: secret` |
+| `X_CUSTOM_HEADER=value` | `X-Custom: value` |
+| `X_REQUEST_ID_HEADER=123` | `X-Request-Id: 123` |
 
-The conversion follows these rules:
-1. Remove the `X_` prefix and `_HEADER` suffix
-2. Split by underscores
-3. Capitalize the first letter of each part and lowercase the rest
-4. Join with hyphens
+## 🔌 MCP Client Configuration
 
-**Examples:**
-
-*   `X_CUSTOM_HEADER=Value` → `X-Custom: Value`
-*   `X_API_KEY_HEADER=secret123` → `X-Api-Key: secret123`
-*   `X_REQUEST_ID_HEADER=req-12345` → `X-Request-Id: req-12345`
-
-**Note:** If you need specific casing for acronyms (e.g., `X-API-Key` instead of `X-Api-Key`), you may need to adjust your SearXNG instance configuration or use a different approach. The current implementation uses standard title-case formatting for all parts.
-
-**Full configuration example with custom headers:**
-
-```dotenv
-SEARXNG_URL=https://your-searxng-instance.com
-AUTHORIZATION_HEADER=Bearer YOUR_TOKEN_HERE
-X_CUSTOM_HEADER=CustomValue
-X_API_KEY_HEADER=secret123
-```
-
-In your MCP client configuration:
+### Stdio Transport
 
 ```json
 {
   "mcpServers": {
     "searxng": {
-      "description": "Search aggregator that queries multiple search engines and returns combined results",
+      "description": "Search aggregator using SearXNG",
       "command": "npx",
       "args": ["-y", "searxng-mcp-ts@latest"],
       "env": {
-        "SEARXNG_URL": "https://your-searxng-instance.com",
-        "AUTHORIZATION_HEADER": "Bearer YOUR_TOKEN_HERE",
-        "X_CUSTOM_HEADER": "CustomValue",
-        "X_API_KEY_HEADER": "secret123"
-      }
+        "SEARXNG_URL": "https://your-searxng-instance.com"
+      },
+      "timeout": 60,
+      "transportType": "stdio"
     }
   }
 }
 ```
 
-## Usage
-
-### Stdio Transport (Default)
-
-Once configured, the server provides a `search` tool. You can use it through your MCP client like this:
-
-**Example Request:**
-
-```json
-{
-  "tool_name": "search",
-  "server_name": "searxng",
-  "arguments": {
-    "query": "Model Context Protocol",
-    "categories": "general",
-    "language": "en"
-  }
-}
-```
-
-**Example Natural Language (if supported by client):**
-
-"Search for 'Model Context Protocol' using SearXNG"
-
 ### HTTP Transport
-
-The server can also run as an HTTP server using the MCP Streamable HTTP transport. This is useful for remote access, multi-client scenarios, or integration with HTTP-based tooling.
-
-#### Starting the HTTP Server
-
-```bash
-# Using the binary (if installed globally)
-SEARXNG_URL=https://your-searxng-instance.com searxng-mcp-ts-http
-
-# Using npx
-SEARXNG_URL=https://your-searxng-instance.com npx searxng-mcp-ts-http
-
-# From a cloned repository
-SEARXNG_URL=https://your-searxng-instance.com node build/http.js
-```
-
-The server listens on `http://127.0.0.1:3000/mcp` by default. Configure the host and port with the `HOST` and `PORT` environment variables:
-
-```bash
-HOST=0.0.0.0 PORT=8080 SEARXNG_URL=https://your-searxng-instance.com searxng-mcp-ts-http
-```
-
-#### MCP Client Configuration (HTTP)
 
 ```json
 {
   "mcpServers": {
     "searxng": {
-      "description": "Search aggregator that queries multiple search engines and returns combined results",
+      "description": "Search aggregator using SearXNG",
       "url": "http://127.0.0.1:3000/mcp"
     }
   }
 }
 ```
 
-#### HTTP Endpoint
+## 🐳 Docker Deployment
 
-All MCP methods are served at a single endpoint: **`/mcp`**
+### Build and Run
 
-| Method   | Description |
-| -------- | ----------- |
-| `POST`   | Send JSON-RPC requests (initialize, tools/list, tools/call, etc.) |
-| `GET`    | Open an SSE stream for server-to-client notifications (requires active session) |
+```bash
+# Build the image
+docker build -t searxng-mcp-ts:latest .
+
+# Run container
+docker run -d \
+  --name searxng-mcp \
+  -p 3000:3000 \
+  -e SEARXNG_URL=https://your-searxng-instance.com \
+  searxng-mcp-ts:latest
+```
+
+### Docker Compose
+
+```bash
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f searxng-mcp
+
+# Stop services
+docker-compose down
+```
+
+### Docker Compose with Local SearXNG
+
+Uncomment the `searxng` service in `docker-compose.yml` to run a local SearXNG instance:
+
+```yaml
+services:
+  searxng-mcp:
+    # ... existing config ...
+    environment:
+      - SEARXNG_URL=http://searxng:8080
+    depends_on:
+      - searxng
+
+  searxng:
+    image: searxng/searxng:latest
+    # ... additional config ...
+```
+
+### Health Check
+
+The Docker container includes a health check:
+
+```bash
+curl http://localhost:3000/health
+```
+
+## 📡 HTTP API Reference
+
+When running in HTTP mode, the server exposes a single endpoint:
+
+### Endpoint: `/mcp`
+
+| Method | Description |
+|--------|-------------|
+| `POST` | Send JSON-RPC requests (initialize, tools/list, tools/call) |
+| `GET` | Open SSE stream for notifications (requires session) |
 | `DELETE` | Terminate a session |
 
-Sessions are managed via the `mcp-session-id` header, which is returned after initialization.
+### Quick HTTP Examples
 
-#### Example: Complete HTTP Interaction
-
-**Step 1: Initialize a session**
+**Initialize session:**
 
 ```bash
 curl -X POST http://127.0.0.1:3000/mcp \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "initialize",
-    "params": {
-      "protocolVersion": "2025-03-26",
-      "capabilities": {},
-      "clientInfo": { "name": "my-client", "version": "1.0" }
-    },
-    "id": 1
-  }'
+  -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"my-client","version":"1.0"}},"id":1}'
 ```
 
-The response includes an `mcp-session-id` header. Use it in subsequent requests.
-
-**Step 2: Send initialized notification**
+**Search:**
 
 ```bash
 curl -X POST http://127.0.0.1:3000/mcp \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
   -H "mcp-session-id: <SESSION_ID>" \
-  -d '{"jsonrpc": "2.0", "method": "notifications/initialized"}'
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"search","arguments":{"query":"MCP protocol"}},"id":2}'
 ```
 
-**Step 3: List available tools**
+## 🛠️ Development
 
 ```bash
-curl -X POST http://127.0.0.1:3000/mcp \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -H "mcp-session-id: <SESSION_ID>" \
-  -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 2}'
+# Install dependencies
+pnpm install
+
+# Watch mode
+pnpm run watch
+
+# Build
+pnpm build
+
+# Run with MCP Inspector
+pnpm run inspector
 ```
 
-**Step 4: Call the search tool**
+## 📁 Project Structure
 
-```bash
-curl -X POST http://127.0.0.1:3000/mcp \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -H "mcp-session-id: <SESSION_ID>" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "tools/call",
-    "params": {
-      "name": "search",
-      "arguments": {
-        "query": "Model Context Protocol",
-        "categories": "general",
-        "language": "en"
-      }
-    },
-    "id": 3
-  }'
+```
+searxng-mcp-ts/
+├── src/
+│   ├── index.ts      # Stdio transport entry point
+│   ├── http.ts       # HTTP transport entry point
+│   └── server.ts     # MCP server implementation
+├── build/            # Compiled JavaScript
+├── Dockerfile        # Multi-stage Docker build
+├── docker-compose.yml
+├── .env.example      # Environment variables template
+└── package.json
 ```
 
-**Step 5: Terminate the session**
+## 📄 License
 
-```bash
-curl -X DELETE http://127.0.0.1:3000/mcp \
-  -H "Accept: application/json, text/event-stream" \
-  -H "mcp-session-id: <SESSION_ID>"
-```
+MIT License - see [LICENSE](LICENSE) for details.
 
-## Production Readiness
+## 🤝 Contributing
 
-This server includes improved error handling and logging to assist in debugging and monitoring in a production environment.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Development
+## 📚 Related Links
 
-*   **Watch for changes:** `npm run watch` (automatically rebuilds on file changes)
-*   **Linting:** `npm run lint`
-*   **Formatting:** `npm run format`
-
-## Publishing
-
-For information on publishing new releases to npm, see [PUBLISHING.md](PUBLISHING.md).
-
-## License
-
-MIT License
+- [Model Context Protocol](https://github.com/modelcontextprotocol/spec)
+- [SearXNG](https://github.com/searxng/searxng)
+- [MCP SDK](https://github.com/modelcontextprotocol/typescript-sdk)
