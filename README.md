@@ -122,7 +122,7 @@ Use the `X_*_HEADER` pattern. Examples:
     "searxng": {
       "description": "Search aggregator using SearXNG",
       "command": "npx",
-      "args": ["-y", "searxng-mcp-ts@latest"],
+      "args": ["-y", "searxng-mcp-ts-deaquino@latest"],
       "env": {
         "SEARXNG_URL": "https://your-searxng-instance.com"
       },
