@@ -45,6 +45,13 @@ function parseCustomHeaders(): Record<string, string> {
     if (key.startsWith('X_') && key.endsWith('_HEADER')) {
       // Extract the middle part (e.g., X_CUSTOM_HEADER -> CUSTOM)
       const headerPart = key.slice(2, -7) // Remove 'X_' prefix and '_HEADER' suffix
+      
+      // Skip if headerPart is empty (e.g., X__HEADER)
+      if (!headerPart) {
+        console.error(`[SearxNG MCP] Skipping invalid header environment variable: ${key}`)
+        continue
+      }
+      
       // Convert to proper header format (e.g., CUSTOM -> Custom)
       const headerName = `X-${headerPart
         .split('_')

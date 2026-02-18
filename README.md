@@ -107,11 +107,21 @@ In your MCP client configuration:
 
 You can add custom headers that start with `X-` by using environment variables in the format `X_*_HEADER`. The environment variable name will be converted to the proper header format.
 
+**Naming Convention:**
+
+The conversion follows these rules:
+1. Remove the `X_` prefix and `_HEADER` suffix
+2. Split by underscores
+3. Capitalize the first letter of each part and lowercase the rest
+4. Join with hyphens
+
 **Examples:**
 
 *   `X_CUSTOM_HEADER=Value` → `X-Custom-Header: Value`
 *   `X_API_KEY_HEADER=secret123` → `X-Api-Key-Header: secret123`
 *   `X_REQUEST_ID_HEADER=req-12345` → `X-Request-Id-Header: req-12345`
+
+**Note:** If you need specific casing for acronyms (e.g., `X-API-Key` instead of `X-Api-Key`), you may need to adjust your SearXNG instance configuration or use a different approach. The current implementation uses standard title-case formatting for all parts.
 
 **Full configuration example with custom headers:**
 
