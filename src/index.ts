@@ -26,6 +26,48 @@ try {
   throw new Error(`Invalid SEARXNG_URL: ${SEARXNG_URL}`)
 }
 
+// Parse custom headers from environment variables
+function parseCustomHeaders(): Record<string, string> {
+  const customHeaders: Record<string, string> = {}
+  
+  // Process all environment variables
+  for (const [key, value] of Object.entries(process.env)) {
+    if (!value) continue
+    
+    // Handle AUTHORIZATION_HEADER
+    if (key === 'AUTHORIZATION_HEADER') {
+      customHeaders['Authorization'] = value
+      console.error(`[SearxNG MCP] Added Authorization header from ${key}`)
+      continue
+    }
+    
+    // Handle X_*_HEADER pattern (e.g., X_CUSTOM_HEADER -> X-Custom-Header)
+    if (key.startsWith('X_') && key.endsWith('_HEADER')) {
+      // Extract the middle part (e.g., X_CUSTOM_HEADER -> CUSTOM)
+      const headerPart = key.slice(2, -7) // Remove 'X_' prefix and '_HEADER' suffix
+      
+      // Skip if headerPart is empty (e.g., X__HEADER)
+      if (!headerPart) {
+        console.error(`[SearxNG MCP] Skipping invalid header environment variable: ${key}`)
+        continue
+      }
+      
+      // Convert to proper header format (e.g., CUSTOM -> Custom)
+      const headerName = `X-${headerPart
+        .split('_')
+        .filter(part => part.length > 0) // Filter out empty parts from consecutive underscores
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join('-')}`
+      customHeaders[headerName] = value
+      console.error(`[SearxNG MCP] Added custom header ${headerName} from ${key}`)
+    }
+  }
+  
+  return customHeaders
+}
+
+const CUSTOM_HEADERS = parseCustomHeaders()
+
 // Define the Zod schema for the search tool arguments
 const SearchToolArgsSchema = z.object({
   query: z.string().describe('The search query.'),
@@ -87,6 +129,7 @@ class SearxNGServer {
       baseURL: SEARXNG_URL,
       headers: {
         Accept: 'application/json',
+        ...CUSTOM_HEADERS,
       },
     })
 
