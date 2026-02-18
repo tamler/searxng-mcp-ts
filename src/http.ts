@@ -94,9 +94,16 @@ app.delete('/mcp', async (req: IncomingMessage, res: ServerResponse) => {
 })
 
 const server = app.listen(PORT, HOST, () => {
-  console.error(
-    `SearxNG MCP server (${serverInfo.name} v${serverInfo.version}) running on http://${HOST}:${PORT}/mcp, connected to ${searxngUrl}`
-  )
+  console.error('='.repeat(60))
+  console.error('SearxNG MCP Server Started')
+  console.error('='.repeat(60))
+  console.error(`  Name:           ${serverInfo.name}`)
+  console.error(`  Version:        ${serverInfo.version}`)
+  console.error(`  Transport:      HTTP (Streamable)`)
+  console.error(`  URL:            http://${HOST}:${PORT}/mcp`)
+  console.error(`  SearxNG URL:    ${searxngUrl}`)
+  console.error(`  Max Sessions:   ${MAX_SESSIONS}`)
+  console.error('='.repeat(60))
 })
 
 process.on('SIGINT', async () => {

@@ -7,6 +7,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import axios, { AxiosInstance } from 'axios'
 import { z } from 'zod'
+import pkg from '../package.json' with { type: 'json' }
 
 // Read SearxNG URL from environment variable
 function getSearxNGUrl(): string {
@@ -118,9 +119,9 @@ export function createSearxNGMcpServer(): { mcpServer: McpServer; serverInfo: Se
   const customHeaders = parseCustomHeaders()
 
   const serverInfo: ServerInfo = {
-    name: 'mcp-server-searxng',
-    version: '0.1.0',
-    description: 'MCP for SearxNG',
+    name: pkg.name,
+    version: pkg.version,
+    description: pkg.description,
   }
 
   const mcpServer = new McpServer(serverInfo)

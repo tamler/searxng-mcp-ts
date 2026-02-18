@@ -15,9 +15,14 @@ process.on('SIGINT', async () => {
 async function run() {
   const transport = new StdioServerTransport()
   await mcpServer.server.connect(transport)
-  console.error(
-    `SearxNG MCP server (${serverInfo.name} v${serverInfo.version}) running on stdio, connected to ${searxngUrl}`
-  )
+  console.error('='.repeat(60))
+  console.error('SearxNG MCP Server Started')
+  console.error('='.repeat(60))
+  console.error(`  Name:           ${serverInfo.name}`)
+  console.error(`  Version:        ${serverInfo.version}`)
+  console.error(`  Transport:      stdio`)
+  console.error(`  SearxNG URL:    ${searxngUrl}`)
+  console.error('='.repeat(60))
 }
 
 run().catch((error) => {
