@@ -73,6 +73,75 @@ In your MCP client's settings file (e.g., `mcp_settings.json` for Roo/Cline), yo
 
 Restart your MCP client after updating the configuration.
 
+### Custom Headers
+
+The server supports custom headers for requests to your SearXNG instance. This is useful for authentication or other custom requirements.
+
+#### Authorization Header
+
+To add an `Authorization` header (e.g., for Bearer token authentication), set the `AUTHORIZATION_HEADER` environment variable:
+
+```dotenv
+AUTHORIZATION_HEADER=Bearer YOUR_TOKEN_HERE
+```
+
+In your MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "description": "Search aggregator that queries multiple search engines and returns combined results",
+      "command": "npx",
+      "args": ["-y", "searxng-mcp-ts@latest"],
+      "env": {
+        "SEARXNG_URL": "https://your-searxng-instance.com",
+        "AUTHORIZATION_HEADER": "Bearer YOUR_TOKEN_HERE"
+      }
+    }
+  }
+}
+```
+
+#### Custom X-Headers
+
+You can add custom headers that start with `X-` by using environment variables in the format `X_*_HEADER`. The environment variable name will be converted to the proper header format.
+
+**Examples:**
+
+*   `X_CUSTOM_HEADER=Value` → `X-Custom-Header: Value`
+*   `X_API_KEY_HEADER=secret123` → `X-Api-Key-Header: secret123`
+*   `X_REQUEST_ID_HEADER=req-12345` → `X-Request-Id-Header: req-12345`
+
+**Full configuration example with custom headers:**
+
+```dotenv
+SEARXNG_URL=https://your-searxng-instance.com
+AUTHORIZATION_HEADER=Bearer YOUR_TOKEN_HERE
+X_CUSTOM_HEADER=CustomValue
+X_API_KEY_HEADER=secret123
+```
+
+In your MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "description": "Search aggregator that queries multiple search engines and returns combined results",
+      "command": "npx",
+      "args": ["-y", "searxng-mcp-ts@latest"],
+      "env": {
+        "SEARXNG_URL": "https://your-searxng-instance.com",
+        "AUTHORIZATION_HEADER": "Bearer YOUR_TOKEN_HERE",
+        "X_CUSTOM_HEADER": "CustomValue",
+        "X_API_KEY_HEADER": "secret123"
+      }
+    }
+  }
+}
+```
+
 ## Usage
 
 Once configured, the server provides a `search` tool. You can use it through your MCP client like this:
