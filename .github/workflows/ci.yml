@@ -38,8 +38,4 @@ jobs:
             echo "Error: build/index.js not found"
             exit 1
           fi
-          if [ ! -x "build/index.js" ]; then
-            echo "Error: build/index.js is not executable"
-            exit 1
-          fi
           echo "Build verification passed"

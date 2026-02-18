@@ -107,11 +107,11 @@ This project follows [Semantic Versioning (SemVer)](https://semver.org/):
 
 ## What Gets Published
 
-The npm package includes only the necessary files for runtime:
+The npm package includes only the necessary files for runtime, controlled by the `"files"` field in `package.json`:
 - `build/` directory (compiled JavaScript)
-- `package.json`
-- `LICENSE`
-- `README.md`
+- `package.json` (automatically included)
+- `LICENSE` (automatically included)
+- `README.md` (automatically included)
 
 Source files, tests, and development configurations are excluded.
 
