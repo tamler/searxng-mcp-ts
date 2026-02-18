@@ -13,7 +13,7 @@ services:
     container_name: searxng-mcp
     restart: unless-stopped
     ports:
-      - "${PORT}:${PORT}"
+      - "${HOST_PORT:-3000}:${PORT:-3000}"
     environment:
       - NODE_ENV=production
       - SEARXNG_URL=${SEARXNG_URL:?SEARXNG_URL is required}
