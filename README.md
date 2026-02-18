@@ -117,9 +117,9 @@ The conversion follows these rules:
 
 **Examples:**
 
-*   `X_CUSTOM_HEADER=Value` → `X-Custom-Header: Value`
-*   `X_API_KEY_HEADER=secret123` → `X-Api-Key-Header: secret123`
-*   `X_REQUEST_ID_HEADER=req-12345` → `X-Request-Id-Header: req-12345`
+*   `X_CUSTOM_HEADER=Value` → `X-Custom: Value`
+*   `X_API_KEY_HEADER=secret123` → `X-Api-Key: secret123`
+*   `X_REQUEST_ID_HEADER=req-12345` → `X-Request-Id: req-12345`
 
 **Note:** If you need specific casing for acronyms (e.g., `X-API-Key` instead of `X-Api-Key`), you may need to adjust your SearXNG instance configuration or use a different approach. The current implementation uses standard title-case formatting for all parts.
 

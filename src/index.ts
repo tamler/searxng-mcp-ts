@@ -55,6 +55,7 @@ function parseCustomHeaders(): Record<string, string> {
       // Convert to proper header format (e.g., CUSTOM -> Custom)
       const headerName = `X-${headerPart
         .split('_')
+        .filter(part => part.length > 0) // Filter out empty parts from consecutive underscores
         .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
         .join('-')}`
       customHeaders[headerName] = value
