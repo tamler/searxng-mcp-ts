@@ -8,6 +8,7 @@ This is a Model Context Protocol (MCP) server that provides a tool to interact w
 
 *   Exposes a `search` tool to perform searches via a configured SearXNG instance.
 *   Supports standard SearXNG parameters like `query`, `categories`, `language`, `page_number`, `time_range`, and `safesearch`.
+*   Two transport modes: **stdio** (default) and **HTTP** (Streamable HTTP).
 
 ## Prerequisites
 
@@ -154,6 +155,8 @@ In your MCP client configuration:
 
 ## Usage
 
+### Stdio Transport (Default)
+
 Once configured, the server provides a `search` tool. You can use it through your MCP client like this:
 
 **Example Request:**
@@ -173,6 +176,126 @@ Once configured, the server provides a `search` tool. You can use it through you
 **Example Natural Language (if supported by client):**
 
 "Search for 'Model Context Protocol' using SearXNG"
+
+### HTTP Transport
+
+The server can also run as an HTTP server using the MCP Streamable HTTP transport. This is useful for remote access, multi-client scenarios, or integration with HTTP-based tooling.
+
+#### Starting the HTTP Server
+
+```bash
+# Using the binary (if installed globally)
+SEARXNG_URL=https://your-searxng-instance.com searxng-mcp-ts-http
+
+# Using npx
+SEARXNG_URL=https://your-searxng-instance.com npx searxng-mcp-ts-http
+
+# From a cloned repository
+SEARXNG_URL=https://your-searxng-instance.com node build/http.js
+```
+
+The server listens on `http://127.0.0.1:3000/mcp` by default. Configure the host and port with the `HOST` and `PORT` environment variables:
+
+```bash
+HOST=0.0.0.0 PORT=8080 SEARXNG_URL=https://your-searxng-instance.com searxng-mcp-ts-http
+```
+
+#### MCP Client Configuration (HTTP)
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "description": "Search aggregator that queries multiple search engines and returns combined results",
+      "url": "http://127.0.0.1:3000/mcp"
+    }
+  }
+}
+```
+
+#### HTTP Endpoint
+
+All MCP methods are served at a single endpoint: **`/mcp`**
+
+| Method   | Description |
+| -------- | ----------- |
+| `POST`   | Send JSON-RPC requests (initialize, tools/list, tools/call, etc.) |
+| `GET`    | Open an SSE stream for server-to-client notifications (requires active session) |
+| `DELETE` | Terminate a session |
+
+Sessions are managed via the `mcp-session-id` header, which is returned after initialization.
+
+#### Example: Complete HTTP Interaction
+
+**Step 1: Initialize a session**
+
+```bash
+curl -X POST http://127.0.0.1:3000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2025-03-26",
+      "capabilities": {},
+      "clientInfo": { "name": "my-client", "version": "1.0" }
+    },
+    "id": 1
+  }'
+```
+
+The response includes an `mcp-session-id` header. Use it in subsequent requests.
+
+**Step 2: Send initialized notification**
+
+```bash
+curl -X POST http://127.0.0.1:3000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "mcp-session-id: <SESSION_ID>" \
+  -d '{"jsonrpc": "2.0", "method": "notifications/initialized"}'
+```
+
+**Step 3: List available tools**
+
+```bash
+curl -X POST http://127.0.0.1:3000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "mcp-session-id: <SESSION_ID>" \
+  -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 2}'
+```
+
+**Step 4: Call the search tool**
+
+```bash
+curl -X POST http://127.0.0.1:3000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "mcp-session-id: <SESSION_ID>" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "search",
+      "arguments": {
+        "query": "Model Context Protocol",
+        "categories": "general",
+        "language": "en"
+      }
+    },
+    "id": 3
+  }'
+```
+
+**Step 5: Terminate the session**
+
+```bash
+curl -X DELETE http://127.0.0.1:3000/mcp \
+  -H "Accept: application/json, text/event-stream" \
+  -H "mcp-session-id: <SESSION_ID>"
+```
 
 ## Production Readiness
 

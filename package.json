@@ -1,13 +1,18 @@
 {
   "name": "searxng-mcp-ts-deaquino",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "MCP for searXNG",
   "license": "MIT",
   "type": "module",
-  "bin": { "searxng-mcp-ts": "./build/index.js" },
-  "files": ["build"],
+  "bin": {
+    "searxng-mcp-ts": "./build/index.js",
+    "searxng-mcp-ts-http": "./build/http.js"
+  },
+  "files": [
+    "build"
+  ],
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\" && node -e \"require('fs').chmodSync('build/http.js', '755')\"",
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
@@ -17,9 +22,13 @@
     "url": "https://github.com/deaquino/searxng-mcp-ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.9.0",
-    "axios": "^1.8.4",
-    "dotenv": "^16.5.0"
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "axios": "^1.13.5",
+    "dotenv": "^17.3.1",
+    "zod": "^4.3.6"
   },
-  "devDependencies": { "@types/node": "^20.17.32", "typescript": "^5.3.3" }
+  "devDependencies": {
+    "@types/node": "^20.17.32",
+    "typescript": "^5.9.3"
+  }
 }
