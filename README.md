@@ -12,7 +12,7 @@ A Model Context Protocol (MCP) server that provides search capabilities through 
 - 📡 **Dual Transport Modes**: stdio (default) and HTTP (Streamable HTTP)
 - 🔐 **Custom Headers**: Support for authentication and custom headers
 - 🐳 **Docker Ready**: Multi-stage Dockerfile and docker-compose support
-- 🚀 **Production Ready**: Error handling, logging, and health checks
+- 🚀 **Production Ready**: Error handling and logging
 
 ### Supported Search Parameters
 
